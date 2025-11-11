@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Internship Finder AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        darkest: '#0b132b', 
+                        darkbg: '#15203d', 
+                        secondary: '#4f46e5', // Indigo/Violet for main actions
+                        accent: '#f59e0b', // Amber/Orange for highlights
+                        textlight: '#e0e7ff',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { 
+            background-color: #0b132b; 
+            min-height: 100vh;
+        }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-thumb { background: #4f46e5; border-radius: 4px; }
+        ::-webkit-scrollbar-track { background: #0b132b; }
+
+        .card-glow {
+            box-shadow: 0 0 10px rgba(79, 70, 229, 0.2), 0 4px 10px rgba(0, 0, 0, 0.5);
+            transition: all 0.3s ease-in-out;
+        }
+
+        .card-glow:hover {
+            box-shadow: 0 0 20px rgba(79, 70, 229, 0.4), 0 8px 15px rgba(0, 0, 0, 0.7);
+            transform: translateY(-2px);
+        }
+
+        .app-input {
+            border: 1px solid #374151; /* gray-700 */
+        }
+        .app-input:focus {
+            border-color: #4f46e5 !important;
+            box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.5);
+        }
+
+        /* Step Indicator Styling */
+        .step-inactive {
+            color: #4b5563; 
+            background-color: #1f2937; 
+            border: 2px solid #374151; 
+        }
+        .step-current {
+            color: #ffffff;
+            background-color: #4f46e5; 
+            border: 2px solid #4f46e5;
+        }
+        .step-complete {
+            color: #ffffff;
+            background-color: #f59e0b; 
+            border: 2px solid #f59e0b;
+        }
+
+        /* Results Tab Styling */
+        .tab-active {
+            border-bottom: 3px solid var(--tw-colors-accent);
+            color: var(--tw-colors-textlight);
+            font-weight: 700;
+        }
+        .tab-inactive {
+            border-bottom: 3px solid transparent;
+            color: #9ca3af; /* gray-400 */
+        }
+
+        .view-content.hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body class="font-sans text-textlight">
+
+    <!-- Main Container - Center App Content -->
+    <div class="max-w-4xl mx-auto p-4 md:p-8">
+        
+        <!-- Header and Step Indicators (Hidden on Landing Page) -->
+        <div id="app-header" class="hidden">
+            <header class="text-center mb-10 border-b border-gray-700 pb-6">
+                <h1 class="text-4xl md:text-5xl font-extrabold text-textlight tracking-tight">
+                    Internship Finder <span class="text-accent">AI</span>
+                </h1>
+                <p class="text-gray-400 mt-2 text-lg">Guided profile setup and personalized matching.</p>
+            </header>
+
+            <nav class="flex justify-between items-center mb-10">
+                <div class="flex-1 text-center">
+                    <div id="step-indicator-2" class="w-10 h-10 mx-auto rounded-full flex items-center justify-center font-bold step-inactive transition duration-300 mb-1">1</div>
+                    <p class="text-sm text-gray-400">Profile Setup</p>
+                </div>
+                <div class="flex-1 h-0.5 bg-gray-700"></div>
+                <div class="flex-1 text-center">
+                    <div id="step-indicator-3" class="w-10 h-10 mx-auto rounded-full flex items-center justify-center font-bold step-inactive transition duration-300 mb-1">2</div>
+                    <p class="text-sm text-gray-400">Opportunities</p>
+                </div>
+            </nav>
+        </div>
+
+        <!-- Status Message Box -->
+        <div id="status-message" class="hidden p-4 rounded-xl text-center font-medium transition duration-300 mb-6 border"></div>
+
+        <main>
+            
+            <!-- Step 1: Welcome/Landing Page (Based on User Image) -->
+            <div id="step-1" class="view-content">
+                <div class="max-w-7xl mx-auto md:grid md:grid-cols-2 md:gap-8 min-h-[80vh] items-center py-10 md:py-0">
+                    <!-- Marketing Copy (Left Side) -->
+                    <div class="p-4 md:p-8 order-2 md:order-1">
+                        <h2 class="text-5xl md:text-7xl font-extrabold text-textlight leading-tight mb-6">
+                            Launching Futures, Finding Opportunities.
+                        </h2>
+                        <p class="text-xl text-gray-400 max-w-lg">
+                            Your seamless connection to top internship positions and career-defining mentorships.
+                        </p>
+                    </div>
+
+                    <!-- Login/Start Card (Right Side) -->
+                    <div class="p-4 flex justify-center md:justify-start order-1 md:order-2">
+                        <div class="bg-darkbg p-8 w-full max-w-sm rounded-2xl shadow-2xl card-glow border border-indigo-900">
+                            <div class="flex flex-col items-center mb-6">
+                                <div class="w-16 h-16 bg-secondary text-textlight rounded-full flex items-center justify-center text-2xl font-bold mb-3">
+                                    INT
+                                </div>
+                                <h3 class="text-2xl font-extrabold tracking-wider text-textlight">INTERNIFY</h3>
+                            </div>
+                            
+                            <!-- Removed the Student/Recruiter Tabs/Buttons as requested -->
+
+                            <button onclick="nextStep()"
+                                class="w-full py-3 bg-accent hover:bg-amber-600 text-darkest font-extrabold rounded-lg shadow-lg transition duration-300 transform hover:scale-[1.01]">
+                                Start My Profile
+                            </button>
+
+                            <p class="text-center text-sm text-gray-500 mt-4">
+                                Already matched? <a href="#" onclick="currentStep=3; updateStepUI(); return false;" class="text-secondary hover:underline font-semibold">View Results</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2: Profile Setup (Combined Basic Info + Skills) -->
+            <div id="step-2" class="view-content hidden bg-darkbg p-8 rounded-xl shadow-2xl card-glow">
+                <h2 class="text-3xl font-bold mb-8 text-secondary">Profile Setup: Info & Skills</h2>
+                <form id="profile-form">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <!-- Basic Info Column -->
+                        <div class="space-y-6">
+                            <h3 class="text-xl font-semibold border-b border-gray-700 pb-2 text-textlight">1. Your Details</h3>
+                            <div>
+                                <label for="name" class="block text-sm font-semibold text-gray-300 mb-1">Full Name</label>
+                                <input type="text" id="name" name="name" required
+                                    class="app-input w-full px-4 py-3 bg-gray-700 rounded-lg focus:ring-secondary text-white placeholder-gray-400"
+                                    placeholder="Jane Doe">
+                            </div>
+
+                            <div>
+                                <label for="education" class="block text-sm font-semibold text-gray-300 mb-1">Current Education Level</label>
+                                <select id="education" name="education" required
+                                    class="app-input w-full px-4 py-3 bg-gray-700 rounded-lg focus:ring-secondary text-white">
+                                    <option value="" disabled selected>Select Level</option>
+                                    <option value="High School">High School</option>
+                                    <option value="Associate's Degree">Associate's Degree</option>
+                                    <option value="Bachelor's Degree">Bachelor's Degree</option>
+                                    <option value="Master's Degree">Master's Degree</option>
+                                    <option value="PhD">PhD</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label for="state" class="block text-sm font-semibold text-gray-300 mb-1">Preferred Location</label>
+                                <input type="text" id="state" name="state" required
+                                    class="app-input w-full px-4 py-3 bg-gray-700 rounded-lg focus:ring-secondary text-white placeholder-gray-400"
+                                    placeholder="Texas, USA or Remote">
+                            </div>
+                        </div>
+
+                        <!-- Skills Column -->
+                        <div class="space-y-6">
+                            <h3 class="text-xl font-semibold border-b border-gray-700 pb-2 text-textlight">2. Your Core Skills</h3>
+                            <div>
+                                <label for="skills" class="block text-sm font-semibold text-gray-300 mb-1">Core Skills (Comma-separated)</label>
+                                <textarea id="skills" name="skills" rows="7" required
+                                    class="app-input w-full px-4 py-3 bg-gray-700 rounded-lg focus:ring-secondary text-white placeholder-gray-400 resize-none"
+                                    placeholder="Python, Data Analysis, SQL, Communication, Project Management"></textarea>
+                                <p class="text-xs text-gray-500 mt-1">List hard and soft skills for the best match quality.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-10 flex justify-between">
+                         <button type="button" onclick="prevStep()"
+                            class="py-3 px-8 bg-gray-700 hover:bg-gray-600 text-white font-bold rounded-xl shadow-lg transition duration-300 transform hover:scale-[1.05]">
+                            &larr; Back to Welcome
+                        </button>
+
+                        <button type="submit" id="submit-button"
+                            class="py-4 px-8 bg-secondary hover:bg-indigo-600 text-white font-extrabold text-lg rounded-xl shadow-lg transition duration-300 transform hover:scale-[1.005] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center">
+                            <span id="button-text">Find My Internship Matches</span>
+                            <svg id="loading-spinner" class="animate-spin h-5 w-5 text-white inline-block ml-3 hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Step 3: Opportunities/Results -->
+            <div id="step-3" class="view-content hidden p-0">
+                <h2 class="text-3xl font-bold mb-6 text-textlight">Step 2: Opportunities Found</h2>
+
+                <!-- Tabs within Step 3 -->
+                <nav class="flex justify-start border-b border-gray-700 mb-6 sticky top-0 z-10 bg-darkbg shadow-lg rounded-t-xl">
+                    <button id="nav-matches" onclick="switchResultsView('matches')" 
+                        class="py-3 px-6 text-gray-400 hover:text-white transition duration-200 tab-active">
+                        ⭐ Top Matches
+                    </button>
+                    <button id="nav-skillup" onclick="switchResultsView('skillup')" 
+                        class="py-3 px-6 text-gray-400 hover:text-white transition duration-200 tab-inactive">
+                        📈 Skill-Up Paths
+                    </button>
+                </nav>
+
+                <!-- Matches List -->
+                <div id="results-matches" class="results-view bg-darkbg p-6 rounded-b-xl shadow-xl">
+                    <h3 class="text-2xl font-bold mb-4 text-secondary">Excellent Matches</h3>
+                    <div id="recommendations-list" class="space-y-6">
+                        <!-- Content rendered here -->
+                    </div>
+                    <div id="recommendations-placeholder" class="hidden bg-darkbg p-10 rounded-xl text-center shadow-xl border-t-4 border-secondary/50">
+                        <svg class="w-16 h-16 mx-auto text-gray-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v16l-12 3zm12-3V3M9 19v-4m0 4h12m-3-5l3-3m0 0l-3-3m3 3l-3 3"></path></svg>
+                        <p class="text-xl font-semibold text-gray-400 mt-3">No Direct Internship Matches Found</p>
+                        <p class="text-gray-500 mt-2">Try checking the **Skill-Up Paths** tab, or go back to Step 2 and add more relevant skills.</p>
+                    </div>
+                </div>
+
+                <!-- Skill-Up Paths List -->
+                <div id="results-skillup" class="results-view hidden bg-darkbg p-6 rounded-b-xl shadow-xl">
+                    <h3 class="text-2xl font-bold mb-4 text-accent">Skill-Up Opportunities</h3>
+                    <p class="text-gray-400 mb-6 bg-gray-700/50 p-4 rounded-lg border-l-4 border-accent/50">These roles are a partial match, requiring acquisition of a single, high-impact skill. Master the **Suggested Skill** to unlock these opportunities.</p>
+                    <div id="partial-matches-list" class="space-y-6">
+                        <!-- Content rendered here -->
+                    </div>
+                    <div id="partial-matches-placeholder" class="hidden bg-darkbg p-10 rounded-xl text-center shadow-xl border-t-4 border-accent/50">
+                        <svg class="w-16 h-16 mx-auto text-gray-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                        <p class="text-xl font-semibold text-gray-400 mt-3">No Skill-Up Opportunities Found</p>
+                        <p class="text-gray-500 mt-2">The system couldn't identify any roles that are just one skill away.</p>
+                    </div>
+                </div>
+
+                <div class="mt-8 flex justify-between">
+                    <button type="button" onclick="prevStep()"
+                        class="py-3 px-8 bg-gray-700 hover:bg-gray-600 text-white font-bold rounded-xl shadow-lg transition duration-300 transform hover:scale-[1.05]">
+                        &larr; Back to Profile
+                    </button>
+                    <button type="button" onclick="resetApp()"
+                        class="py-3 px-8 bg-red-700 hover:bg-red-600 text-white font-bold rounded-xl shadow-lg transition duration-300 transform hover:scale-[1.05]">
+                        Start New Search
+                    </button>
+                </div>
+
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        const API_URL = 'https://project2-hmhk.onrender.com/profile-setup'; 
+        const MAX_RETRIES = 3;
+
+        // --- State Management ---
+        let currentStep = 1;
+
+        // --- DOM Element References ---
+        const appHeader = document.getElementById('app-header');
+        const steps = {
+            1: document.getElementById('step-1'),
+            2: document.getElementById('step-2'),
+            3: document.getElementById('step-3')
+        };
+        const indicators = {
+            2: document.getElementById('step-indicator-2'), // Start from 2 for profile setup
+            3: document.getElementById('step-indicator-3')
+        };
+        const profileForm = document.getElementById('profile-form');
+
+        const submitButton = document.getElementById('submit-button');
+        const buttonText = document.getElementById('button-text');
+        const loadingSpinner = document.getElementById('loading-spinner');
+        const statusMessage = document.getElementById('status-message');
+        
+        const recommendationsList = document.getElementById('recommendations-list');
+        const partialMatchesList = document.getElementById('partial-matches-list');
+        const recommendationsPlaceholder = document.getElementById('recommendations-placeholder');
+        const partialMatchesPlaceholder = document.getElementById('partial-matches-placeholder');
+        
+        // --- Navigation and View Control ---
+
+        function updateStepUI() {
+            // 1. Hide/Show Steps
+            Object.keys(steps).forEach(key => {
+                steps[key].classList.toggle('hidden', parseInt(key) !== currentStep);
+            });
+            
+            // 2. Toggle Header (Hidden on Step 1)
+            appHeader.classList.toggle('hidden', currentStep === 1);
+
+            // 3. Update Indicators
+            Object.keys(indicators).forEach(key => {
+                const indicator = indicators[key];
+                const stepNum = parseInt(key);
+                indicator.classList.remove('step-current', 'step-complete', 'step-inactive');
+
+                if (stepNum === currentStep) {
+                    indicator.classList.add('step-current');
+                    indicator.parentNode.querySelector('p').classList.add('text-textlight');
+                    indicator.parentNode.querySelector('p').classList.remove('text-gray-400');
+                } else if (stepNum < currentStep) {
+                    indicator.classList.add('step-complete');
+                    indicator.parentNode.querySelector('p').classList.add('text-textlight');
+                    indicator.parentNode.querySelector('p').classList.remove('text-gray-400');
+                } else {
+                    indicator.classList.add('step-inactive');
+                    indicator.parentNode.querySelector('p').classList.add('text-gray-400');
+                    indicator.parentNode.querySelector('p').classList.remove('text-textlight');
+                }
+            });
+
+            // Scroll to the top of the step content
+            if (steps[currentStep]) {
+                 steps[currentStep].scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+            
+            // Clear status message when moving away from results
+            if (currentStep < 3) {
+                 statusMessage.classList.add('hidden');
+            }
+        }
+
+        function nextStep() {
+            if (currentStep < 3) {
+                currentStep++;
+                updateStepUI();
+                // If moving to step 3, ensure the default results tab is active
+                if (currentStep === 3) {
+                    switchResultsView('matches');
+                }
+            }
+        }
+
+        function prevStep() {
+            if (currentStep > 1) {
+                currentStep--;
+                updateStepUI();
+            }
+        }
+
+        function switchResultsView(viewName) {
+            const matchView = document.getElementById('results-matches');
+            const skillUpView = document.getElementById('results-skillup');
+            const navMatch = document.getElementById('nav-matches');
+            const navSkill = document.getElementById('nav-skillup');
+
+            // Deactivate all navs and hide all views
+            navMatch.classList.remove('tab-active');
+            navMatch.classList.add('tab-inactive');
+            navSkill.classList.remove('tab-active');
+            navSkill.classList.add('tab-inactive');
+            matchView.classList.add('hidden');
+            skillUpView.classList.add('hidden');
+
+            // Show selected view and activate nav
+            if (viewName === 'matches') {
+                matchView.classList.remove('hidden');
+                navMatch.classList.add('tab-active');
+                navMatch.classList.remove('tab-inactive');
+            } else if (viewName === 'skillup') {
+                skillUpView.classList.remove('hidden');
+                navSkill.classList.add('tab-active');
+                navSkill.classList.remove('tab-inactive');
+            }
+        }
+
+
+        // --- Utility Functions ---
+
+        function toggleLoading(isLoading) {
+            submitButton.disabled = isLoading;
+            buttonText.textContent = isLoading ? 'Processing...' : 'Find My Internship Matches';
+            loadingSpinner.classList.toggle('hidden', !isLoading);
+        }
+
+        function displayStatus(message, type) {
+            statusMessage.textContent = message;
+            statusMessage.classList.remove('hidden', 'bg-red-900', 'text-red-300', 'border-red-600', 'bg-green-900', 'text-green-300', 'border-green-600', 'bg-yellow-900', 'text-yellow-300', 'border-yellow-600');
+            
+            if (type === 'error') {
+                statusMessage.classList.add('bg-red-900', 'text-red-300', 'border-red-600');
+            } else if (type === 'success') {
+                statusMessage.classList.add('bg-green-900', 'text-green-300', 'border-green-600');
+            } else { // info/warning
+                statusMessage.classList.add('bg-yellow-900', 'text-yellow-300', 'border-yellow-600');
+            }
+            statusMessage.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function resetApp() {
+            sessionStorage.removeItem('internifyProfile'); // Clear stored data
+            profileForm.reset();
+            currentStep = 1;
+            updateStepUI();
+            statusMessage.classList.add('hidden');
+            recommendationsList.innerHTML = '';
+            partialMatchesList.innerHTML = '';
+            recommendationsPlaceholder.classList.remove('hidden');
+            partialMatchesPlaceholder.classList.remove('hidden');
+        }
+
+        // --- Rendering Functions ---
+
+        function renderRecommendations(recommendations) {
+            recommendationsList.innerHTML = '';
+            const hasRecs = recommendations.length > 0;
+            recommendationsPlaceholder.classList.toggle('hidden', hasRecs);
+
+            recommendations.forEach((role) => {
+                const card = document.createElement('div');
+                card.className = 'bg-darkbg p-6 rounded-xl border-l-4 border-secondary card-glow shadow-lg';
+                card.innerHTML = `
+                    <h3 class="text-2xl font-bold text-textlight mb-2">${role.job_title}</h3>
+                    <p class="text-secondary font-medium text-sm italic mb-4 flex items-center">
+                        <svg class="w-4 h-4 mr-1 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.487 7.71h6.56L10 1l2.953 6.71h6.56l-4.758 4.835 1.123 6.545z"/></svg>
+                        Excellent Match: All Core Skills Present
+                    </p>
+                    <p class="text-gray-300 whitespace-pre-wrap">${role.job_description}</p>
+                `;
+                recommendationsList.appendChild(card);
+            });
+        }
+
+        function renderPartialMatches(partialMatches) {
+            partialMatchesList.innerHTML = '';
+            const hasMatches = partialMatches.length > 0;
+            partialMatchesPlaceholder.classList.toggle('hidden', hasMatches);
+
+            partialMatches.forEach((role) => {
+                const card = document.createElement('div');
+                card.className = 'bg-darkbg p-6 rounded-xl border-l-4 border-accent card-glow shadow-lg';
+                card.innerHTML = `
+                    <h3 class="text-2xl font-bold text-textlight mb-2">${role.job_title}</h3>
+                    <div class="mb-4 text-sm flex flex-wrap items-center">
+                        <span class="inline-block bg-accent text-darkest font-extrabold px-4 py-1.5 rounded-full shadow-md text-sm">
+                            Suggested Skill: ${role.suggested_skill}
+                        </span>
+                        <span class="text-gray-400 ml-3 mt-1 md:mt-0">| Next-Level Opportunity</span>
+                    </div>
+                    <p class="text-gray-300 whitespace-pre-wrap">${role.job_description}</p>
+                `;
+                partialMatchesList.appendChild(card);
+            });
+        }
+        
+        // --- Mock Data Fallback ---
+        
+        function getMockData() {
+            console.log("Using Mock Data Fallback: External API connection failed.");
+            return {
+                recommendations: [
+                    {
+                        job_title: "Software Development Intern (Full Stack)",
+                        job_description: "Design, develop, and test web applications using Python and JavaScript. Collaborate with a small team on mission-critical features. (Matched on: Python, JavaScript, Teamwork)"
+                    },
+                    {
+                        job_title: "Data Analyst Internship",
+                        job_description: "Clean, transform, and analyze large datasets using SQL and advanced analytical techniques. Create reports and visualizations to inform business strategy. (Matched on: Data Analysis, SQL, Reporting)"
+                    }
+                ],
+                partialMatches: [
+                    {
+                        job_title: "Cloud Infrastructure Intern",
+                        job_description: "Assist in managing and scaling our cloud environments (AWS/Azure). Requires basic scripting knowledge and familiarity with CI/CD concepts.",
+                        suggested_skill: "Terraform/CloudFormation"
+                    },
+                    {
+                        job_title: "UX/UI Design Internship",
+                        job_description: "Conduct user research, create wireframes, and design high-fidelity mockups for new product features. Strong communication is key.",
+                        suggested_skill: "Figma or Sketch"
+                    }
+                ]
+            };
+        }
+
+        // --- API & Form Handling ---
+
+        async function fetchWithRetry(payload, retryCount = 0) {
+            const delay = Math.pow(2, retryCount) * 1500;
+            
+            try {
+                if (retryCount > 0) {
+                    displayStatus(`Connection issue detected. Retrying in ${delay / 1000}s (Attempt ${retryCount + 1}/${MAX_RETRIES + 1})...`, 'info');
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                }
+
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    if (retryCount < MAX_RETRIES) {
+                        throw new Error(`Server returned status: ${response.status}.`);
+                    } else {
+                         throw new Error(`Server failed: ${response.statusText || response.status}. Check backend logs.`);
+                    }
+                }
+
+                return await response.json();
+
+            } catch (error) {
+                if (retryCount < MAX_RETRIES) {
+                    return fetchWithRetry(payload, retryCount + 1);
+                } else {
+                    throw new Error(`Connection Error: Could not reach the external service after ${MAX_RETRIES + 1} attempts. The service is likely offline.`);
+                }
+            }
+        }
+        
+        /**
+         * Centralized function to process, save, and render the results.
+         */
+        function processResults(data, profilePayload) {
+            // Merge profile info and results for storage
+            const profileData = { ...profilePayload, ...data };
+            sessionStorage.setItem('internifyProfile', JSON.stringify(profileData));
+            
+            const recs = data.recommendations || [];
+            const partials = data.partialMatches || [];
+
+            renderRecommendations(recs);
+            renderPartialMatches(partials);
+            
+            nextStep(); // Move to Step 3 (Opportunities)
+            
+            const hasRecs = recs.length > 0 || partials.length > 0;
+            
+            if (hasRecs) {
+                displayStatus("Success! Your personalized internship matches are ready.", 'success');
+                // Auto switch to the better tab (matches first)
+                if (recs.length > 0) {
+                    switchResultsView('matches');
+                } else {
+                    switchResultsView('skillup');
+                }
+            } else {
+                displayStatus("Profile saved, but no matches were found. Review your skills!", 'error');
+                switchResultsView('matches'); // Show the empty placeholder
+            }
+        }
+
+        async function submitProfileForm(event) {
+            event.preventDefault();
+            toggleLoading(true);
+            statusMessage.classList.add('hidden');
+
+            const formElements = profileForm.elements;
+            
+            const name = formElements.name.value.trim();
+            const education = formElements.education.value;
+            const state = formElements.state.value.trim();
+            const skillsInput = formElements.skills.value;
+
+            // Basic validation
+            if (!name || !education || !state || !skillsInput.trim()) {
+                displayStatus("Please fill out all required fields (Name, Education, Location, and Skills).", 'error');
+                toggleLoading(false);
+                return;
+            }
+            
+            // Clean and process skills input
+            const skills = skillsInput.split(',')
+                                     .map(s => s.trim().toLowerCase())
+                                     .filter(s => s.length > 0)
+                                     .join(', ');
+
+            if (skills.length === 0) {
+                displayStatus("Please enter at least one skill to receive internship matches.", 'error');
+                toggleLoading(false);
+                return;
+            }
+
+            // Construct the final payload for the API
+            const payload = { name, education, state, skills };
+            
+            let data;
+
+            try {
+                // 1. Try to fetch from the external API
+                data = await fetchWithRetry(payload);
+                processResults(data, payload);
+
+            } catch (error) {
+                console.error('Final Error: The external API failed. Falling back to mock data.', error);
+                displayStatus(`Error connecting to the matching service: ${error.message}. Displaying sample data instead.`, 'warning');
+                
+                // 2. FALLBACK: Use local mock data if fetch fails
+                data = getMockData();
+                processResults(data, payload);
+                
+            } finally {
+                toggleLoading(false);
+            }
+        }
+
+        /**
+         * Loads data from storage and initializes the app state.
+         */
+        function loadDataFromStorage() {
+             const profileString = sessionStorage.getItem('internifyProfile');
+             
+             if (profileString) {
+                try {
+                    const data = JSON.parse(profileString);
+                    const formElements = profileForm.elements;
+                    
+                    // Pre-fill Step 2 fields
+                    if (data.name) formElements.name.value = data.name;
+                    if (data.education) formElements.education.value = data.education;
+                    if (data.state) formElements.state.value = data.state;
+                    if (data.skills) formElements.skills.value = data.skills;
+                    
+                    // Check if results were saved
+                    if (data.recommendations || data.partialMatches) {
+                        renderRecommendations(data.recommendations || []);
+                        renderPartialMatches(data.partialMatches || []);
+                        currentStep = 3; // Jump directly to results
+                        displayStatus("Loaded previous session results. Click Start New Search or Back to Profile.", 'info');
+                    } else if (data.name && data.education && data.state) {
+                        currentStep = 2; // Jump to profile setup if basic info is complete
+                    }
+                    
+                } catch (e) {
+                    console.error('Error parsing session storage data:', e);
+                    // Fallback to Step 1 on error
+                    currentStep = 1;
+                }
+             } else {
+                currentStep = 1;
+             }
+             updateStepUI();
+        }
+
+        // Add event listeners
+        profileForm.addEventListener('submit', submitProfileForm);
+        
+        // Initialize app state on load
+        window.onload = loadDataFromStorage;
+    </script>
+</body>
+</html>
